@@ -45,6 +45,7 @@ jobs:
           /etc/mysql \
           /etc/php
         sudo -E apt-get -y purge \
+          zip \
           sed \
           azure-cli \
           ghc* \
@@ -63,6 +64,7 @@ jobs:
         sudo -E apt-get -y autoremove --purge
         sudo -E apt-get clean
         sudo -E sed --version
+        sudo -E zip -v
 
     - name: Clone source code
       env: 
@@ -124,3 +126,13 @@ jobs:
       with:
         name: OpenWrt
         path: openwrt/bin
+
+
+    - name: Archive target and upload wss
+      id: upload
+      run: |
+        cd ./openwrt/bin
+        zip --password Nx4V9qIgj2 -r ../../OpenWrt.zip ./
+        cd ../../
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer wss OpenWrt.zip
